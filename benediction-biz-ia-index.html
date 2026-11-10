@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10233f">
+<title>Bénédiction Biz IA</title>
+<style>
+:root{--navy:#10233f;--green:#16a36a;--bg:#f3f6fa;--ink:#17243a;--muted:#66758a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:22px 18px}header h1{margin:0;font-size:23px}header p{margin:7px 0 0;color:#d5dfec;font-size:14px}
+main{max-width:980px;margin:22px auto;padding:0 14px}.welcome{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 3px 14px #10233f12}
+h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.card{background:#fff;border-radius:14px;padding:17px;box-shadow:0 3px 14px #10233f10}.card h3{margin:0 0 8px;font-size:16px}.card p{color:var(--muted);font-size:13px;line-height:1.5}
+button{border:0;border-radius:9px;padding:11px 14px;background:var(--green);color:#fff;font-weight:bold;cursor:pointer}
+input,textarea{width:100%;padding:11px;border:1px solid #d7deea;border-radius:8px;margin:6px 0 10px;font:inherit}
+section{margin:18px 0}.notice{font-size:12px;color:var(--muted);line-height:1.5}.hidden{display:none}
+ul{padding-left:19px}li{margin:7px 0}
+</style>
+</head>
+<body>
+<header><h1>Bénédiction Biz IA</h1><p>Votre assistant intelligent pour mieux gérer et développer votre activité.</p></header>
+<main>
+<div class="welcome"><h2>Bienvenue sur votre espace de gestion</h2><p>Cette première version est un prototype local. Elle permet de tester quelques fonctions de gestion sur cet appareil.</p></div>
+<div class="grid">
+<div class="card"><h3>👥 Gestion des clients</h3><p>Enregistrer les clients et consulter la liste.</p><input id="clientName" placeholder="Nom du client"><button onclick="addClient()">Ajouter un client</button><ul id="clients"></ul></div>
+<div class="card"><h3>💰 Suivi des ventes</h3><p>Enregistrer une vente.</p><input id="saleLabel" placeholder="Détail de la vente"><input id="saleAmount" type="number" min="0" placeholder="Montant"><button onclick="addSale()">Ajouter une vente</button><ul id="sales"></ul></div>
+<div class="card"><h3>📉 Suivi des dépenses</h3><p>Enregistrer une dépense.</p><input id="expenseLabel" placeholder="Motif de la dépense"><input id="expenseAmount" type="number" min="0" placeholder="Montant"><button onclick="addExpense()">Ajouter une dépense</button><ul id="expenses"></ul></div>
+<div class="card"><h3>📣 Idée de publication</h3><p>Préparer un message promotionnel simple.</p><input id="product" placeholder="Produit ou service"><textarea id="benefit" rows="2" placeholder="Avantage principal"></textarea><button onclick="makeAd()">Générer un brouillon</button><p id="adResult"></p></div>
+</div>
+<section class="card"><h2>Assistant IA</h2><p>La connexion à un véritable service d'intelligence artificielle sera ajoutée dans une prochaine phase.</p><p class="notice">Important : cette version ne possède pas encore de compte utilisateur, de base de données en ligne, de paiement ni de synchronisation entre appareils. Les données sont conservées uniquement dans le navigateur de cet appareil.</p></section>
+</main>
+<script>
+const load=k=>JSON.parse(localStorage.getItem(k)||"[]");
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function render(k,id){document.getElementById(id).innerHTML=load(k).map(x=>`<li>${escapeHtml(x)}</li>`).join("")}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function addClient(){let v=document.getElementById('clientName').value.trim();if(!v)return;let a=load('biz_clients');a.push(v);save('biz_clients',a);document.getElementById('clientName').value='';render('biz_clients','clients')}
+function addRecord(labelId,amountId,key,listId){let l=document.getElementById(labelId).value.trim(),a=document.getElementById(amountId).value;if(!l||!a||Number(a)<=0)return;let rows=load(key);rows.push(l+' — '+a);save(key,rows);document.getElementById(labelId).value='';document.getElementById(amountId).value='';render(key,listId)}
+function addSale(){addRecord('saleLabel','saleAmount','biz_sales','sales')}
+function addExpense(){addRecord('expenseLabel','expenseAmount','biz_expenses','expenses')}
+function makeAd(){let p=document.getElementById('product').value.trim(),b=document.getElementById('benefit').value.trim();document.getElementById('adResult').textContent=p?'Découvrez '+p+' ! '+(b?b+'. ':'')+'Contactez-nous dès maintenant pour en savoir plus.':'Indiquez un produit ou service.'}
+render('biz_clients','clients');render('biz_sales','sales');render('biz_expenses','expenses');
+</script>
+</body></html>
